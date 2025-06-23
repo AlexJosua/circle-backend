@@ -6,10 +6,69 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String    @id @default(uuid())
+  name      String
+  username  String    @unique
+  email     String    @unique
+  password  String
+  bio       String?
+  photo     String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  // Relations
+  posts      Post[]
+  comments   Comment[]
+  followers  Follow[] @relation("followers")
+  following  Follow[] @relation("following")
+}
+
+// Post model
+model Post {
+  id        String    @id @default(uuid())
+  content   String
+  photo     String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  // Relations
+  author    User      @relation(fields: [authorId], references: [id])
+  authorId  String
+  comments  Comment[]
+}
+
+// Comment model
+model Comment {
+  id        String    @id @default(uuid())
+  content   String
+  createdAt DateTime  @default(now())
+
+  // Relations
+  author    User      @relation(fields: [authorId], references: [id])
+  authorId  String
+
+  post      Post      @relation(fields: [postId], references: [id])
+  postId    String
+}
+
+// Follow model
+model Follow {
+  id         String   @id @default(uuid())
+  createdAt  DateTime @default(now())
+
+  follower   User     @relation("followers", fields: [followerId], references: [id])
+  followerId String
+
+  following  User     @relation("following", fields: [followingId], references: [id])
+  followingId String
+
+  @@unique([followerId, followingId]) // mencegah duplicate follow
 }
