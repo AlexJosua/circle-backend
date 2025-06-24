@@ -6,11 +6,14 @@ import postsRouter from "./routes/posts";
 import commentRouter from "./routes/comments";
 import followRouter from "./routes/follow";
 import likeRouter from "./routes/like";
+import cors from "cors";
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+app.use(cors());
 
 app.use(express.json());
 
