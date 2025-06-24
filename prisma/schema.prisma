@@ -29,6 +29,7 @@ model User {
   comments   Comment[]
   followers  Follow[] @relation("followers")
   following  Follow[] @relation("following")
+  likes Like[]
 }
 
 // Post model
@@ -43,6 +44,7 @@ model Post {
   author    User      @relation(fields: [authorId], references: [id])
   authorId  String
   comments  Comment[]
+  likes Like[]
 }
 
 // Comment model
@@ -71,4 +73,17 @@ model Follow {
   followingId String
 
   @@unique([followerId, followingId]) // mencegah duplicate follow
+}
+
+model Like {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+
+  post      Post     @relation(fields: [postId], references: [id])
+  postId    String
+
+  @@unique([userId, postId]) // mencegah like ganda oleh user yang sama
 }

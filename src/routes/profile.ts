@@ -1,5 +1,6 @@
 import express from "express";
 import { authenticate } from "../middlewares/authMiddleware";
+import { getAllUsers } from "../controllers/user";
 
 const profileRouter = express.Router();
 
@@ -8,4 +9,5 @@ profileRouter.get("/profile", authenticate, (req, res) => {
   res.json({ message: "Profil berhasil diakses", user });
 });
 
+profileRouter.get("/users", getAllUsers);
 export default profileRouter;

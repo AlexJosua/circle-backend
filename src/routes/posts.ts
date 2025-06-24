@@ -10,9 +10,9 @@ import {
 
 const postsRouter = express.Router();
 
-postsRouter.post("/", authenticate, upload.single("photo"), createPost);
-postsRouter.get("/", getAllPosts);
-postsRouter.get("/:id", getPostById);
-postsRouter.delete("/:id", authenticate, deletePost);
+postsRouter.post("/post", authenticate, upload.single("photo"), createPost);
+postsRouter.get("/post", getAllPosts);
+postsRouter.get("/post/:id", getPostById);
+postsRouter.delete("/post/:id", authenticate, deletePost);
 
 export default postsRouter;

@@ -3,6 +3,9 @@ import dotenv from "dotenv";
 import authRouter from "./routes/auth";
 import profileRouter from "./routes/profile";
 import postsRouter from "./routes/posts";
+import commentRouter from "./routes/comments";
+import followRouter from "./routes/follow";
+import likeRouter from "./routes/like";
 
 dotenv.config();
 
@@ -13,7 +16,10 @@ app.use(express.json());
 
 app.use("/api/auth", authRouter);
 app.use("/api/user", profileRouter);
-app.use("/api/posts", postsRouter);
+app.use("/api", postsRouter);
+app.use("/api", commentRouter);
+app.use("/api", followRouter);
+app.use("/api", likeRouter);
 
 app.get("/", (_, res) => {
   res.send("API is running ✅");
