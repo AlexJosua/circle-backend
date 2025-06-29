@@ -7,6 +7,7 @@ import commentRouter from "./routes/comments";
 import followRouter from "./routes/follow";
 import likeRouter from "./routes/like";
 import cors from "cors";
+import path from "path";
 
 dotenv.config();
 
@@ -23,10 +24,11 @@ app.use("/api", postsRouter);
 app.use("/api", commentRouter);
 app.use("/api", followRouter);
 app.use("/api", likeRouter);
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
-app.get("/", (_, res) => {
-  res.send("API is running ✅");
-});
+// app.get("/", (_, res) => {
+//   res.send("API is running ✅");
+// });
 
 app.listen(PORT, () => {
   console.log(`running in localhost ${PORT}`);

@@ -31,8 +31,12 @@ export const getAllPosts = async (_: Request, res: Response) => {
         author: {
           select: { id: true, name: true, username: true, photo: true },
         },
-        comments: true,
-        likes: true,
+        _count: {
+          select: {
+            comments: true,
+            likes: true,
+          },
+        },
       },
     });
 
@@ -55,7 +59,19 @@ export const getPostById = async (req: Request, res: Response) => {
         author: {
           select: { id: true, name: true, username: true, photo: true },
         },
-        comments: true,
+        _count: {
+          select: {
+            likes: true,
+            comments: true,
+          },
+        },
+        comments: {
+          include: {
+            author: {
+              select: { id: true, name: true, username: true, photo: true },
+            },
+          },
+        },
       },
     });
 
@@ -67,8 +83,10 @@ export const getPostById = async (req: Request, res: Response) => {
     res
       .status(200)
       .json({ message: "Detail post berhasil diambil", data: post });
+    return;
   } catch (error) {
     res.status(500).json({ message: "Gagal mengambil detail post", error });
+    return;
   }
 };
 
