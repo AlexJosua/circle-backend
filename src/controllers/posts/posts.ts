@@ -90,6 +90,41 @@ export const getPostById = async (req: Request, res: Response) => {
   }
 };
 
+export const getPostsByUserId = async (req: Request, res: Response) => {
+  const { id: userId } = req.params;
+
+  try {
+    const posts = await prisma.post.findMany({
+      where: { authorId: userId },
+      orderBy: { createdAt: "desc" },
+      include: {
+        author: {
+          select: {
+            id: true,
+            name: true,
+            username: true,
+            photo: true,
+          },
+        },
+
+        _count: {
+          select: { likes: true, comments: true },
+        },
+      },
+    });
+
+    res.status(200).json({
+      message: "List post milik user berhasil diambil",
+      data: posts,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Gagal mengambil post user",
+      error,
+    });
+  }
+};
+
 // DELETE
 export const deletePost = async (req: Request, res: Response) => {
   const { id } = req.params;
