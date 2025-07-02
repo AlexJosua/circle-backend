@@ -104,3 +104,39 @@ export const getFollowing = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Gagal ambil following", error });
   }
 };
+
+export const getSuggestedUsers = async (req: Request, res: Response) => {
+  const currentUserId = (req as any).user.id;
+
+  try {
+    const followed = await prisma.follow.findMany({
+      where: {
+        followerId: currentUserId,
+      },
+      select: {
+        followingId: true,
+      },
+    });
+
+    const followedIds = followed.map((f) => f.followingId);
+
+    const users = await prisma.user.findMany({
+      where: {
+        id: {
+          notIn: [...followedIds, currentUserId],
+        },
+      },
+      select: {
+        id: true,
+        name: true,
+        username: true,
+        photo: true,
+      },
+    });
+
+    res.json({ data: users });
+  } catch (error) {
+    console.error("Error getting suggested users", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};

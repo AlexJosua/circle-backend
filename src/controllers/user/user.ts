@@ -69,3 +69,30 @@ export const updateProfile = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Failed to update profile", error: err });
   }
 };
+
+export const getUserByUsername = async (req: Request, res: Response) => {
+  const { username } = req.params;
+
+  try {
+    const user = await prisma.user.findUnique({
+      where: { username },
+      select: {
+        id: true,
+        name: true,
+        username: true,
+        bio: true,
+        photo: true,
+      },
+    });
+
+    if (!user) {
+      res.status(404).json({ message: "User tidak ditemukan" });
+      return;
+    }
+
+    res.json({ data: user });
+  } catch (error) {
+    console.error("Gagal ambil data user:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};

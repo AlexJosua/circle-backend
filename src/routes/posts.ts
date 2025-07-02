@@ -12,7 +12,7 @@ import {
 const postsRouter = express.Router();
 
 postsRouter.post("/post", authenticate, upload.single("photo"), createPost);
-postsRouter.get("/post", getAllPosts);
+postsRouter.get("/posts", getAllPosts);
 postsRouter.get("/post/:id", getPostById);
 postsRouter.get("/post/user/:id", getPostsByUserId);
 postsRouter.delete("/post/:id", authenticate, deletePost);

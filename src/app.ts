@@ -8,6 +8,7 @@ import followRouter from "./routes/follow";
 import likeRouter from "./routes/like";
 import cors from "cors";
 import path from "path";
+import searchRouter from "./routes/search";
 
 dotenv.config();
 
@@ -24,6 +25,7 @@ app.use("/api", postsRouter);
 app.use("/api", commentRouter);
 app.use("/api", followRouter);
 app.use("/api", likeRouter);
+app.use("/api", searchRouter);
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // app.get("/", (_, res) => {
@@ -31,5 +33,5 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 // });
 
 app.listen(PORT, () => {
-  console.log(`running in localhost ${PORT}`);
+  console.log(`server is running in port ${PORT}`);
 });

@@ -31,6 +31,11 @@ export const getAllPosts = async (_: Request, res: Response) => {
         author: {
           select: { id: true, name: true, username: true, photo: true },
         },
+        likes: {
+          select: {
+            userId: true,
+          },
+        },
         _count: {
           select: {
             comments: true,
