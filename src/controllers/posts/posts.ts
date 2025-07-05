@@ -136,7 +136,6 @@ export const deletePost = async (req: Request, res: Response) => {
   const user = (req as any).user;
 
   try {
-    // Cek apakah post milik user ini
     const post = await prisma.post.findUnique({ where: { id } });
 
     if (!post || post.authorId !== user.id) {
@@ -144,10 +143,64 @@ export const deletePost = async (req: Request, res: Response) => {
       return;
     }
 
-    await prisma.post.delete({ where: { id } });
+    await prisma.comment.deleteMany({
+      where: { postId: id },
+    });
+
+    await prisma.like.deleteMany({
+      where: { postId: id },
+    });
+
+    await prisma.post.delete({
+      where: { id },
+    });
 
     res.status(200).json({ message: "Post berhasil dihapus" });
   } catch (error) {
+    console.error("Gagal hapus post", error);
     res.status(500).json({ message: "Gagal menghapus post", error });
+  }
+};
+
+// Controller
+
+export const editPost = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const { content } = req.body;
+  const file = req.file;
+  const user = (req as any).user;
+
+  try {
+    // 1. Cek apakah post milik user yang login
+    const post = await prisma.post.findUnique({
+      where: { id },
+      select: { authorId: true },
+    });
+
+    if (!post) {
+      res.status(404).json({ message: "Post tidak ditemukan" });
+      return;
+    }
+
+    if (post.authorId !== user.id) {
+      res
+        .status(403)
+        .json({ message: "Kamu tidak memiliki akses untuk mengedit post ini" });
+      return;
+    }
+
+    // 2. Lanjut update jika pemiliknya benar
+    const updated = await prisma.post.update({
+      where: { id },
+      data: {
+        content,
+        ...(file && { photo: `/uploads/${file.filename}` }),
+      },
+    });
+
+    res.json({ message: "Post berhasil diupdate", data: updated });
+  } catch (err) {
+    console.error("Gagal update post", err);
+    res.status(500).json({ message: "Gagal update post", error: err });
   }
 };
