@@ -1,23 +1,24 @@
 import { Request, Response } from "express";
 import { prisma } from "../../lib/prisma";
+import { v2 as cloudinary } from "cloudinary";
+import fs from "fs";
 
-// CREATE
 export const createPost = async (req: Request, res: Response) => {
   const user = (req as any).user;
-  const { content } = req.body;
-  const file = req.file;
+  const { content, photo } = req.body;
 
   try {
     const post = await prisma.post.create({
       data: {
         content,
-        photo: file ? `/uploads/${file.filename}` : null,
+        photo: photo || null, // ambil dari cloudinary result
         authorId: user.id,
       },
     });
 
     res.status(201).json({ message: "Post berhasil dibuat", data: post });
   } catch (error) {
+    console.error("POST ERROR:", error);
     res.status(500).json({ message: "Gagal membuat post", error });
   }
 };
@@ -166,35 +167,30 @@ export const deletePost = async (req: Request, res: Response) => {
 
 export const editPost = async (req: Request, res: Response) => {
   const { id } = req.params;
-  const { content } = req.body;
-  const file = req.file;
+  const { content, photo } = req.body;
   const user = (req as any).user;
 
   try {
-    // 1. Cek apakah post milik user yang login
     const post = await prisma.post.findUnique({
       where: { id },
       select: { authorId: true },
     });
 
     if (!post) {
-      res.status(404).json({ message: "Post tidak ditemukan" });
+      res.status(404).json({ message: "post tidak ditemukan" });
       return;
     }
-
     if (post.authorId !== user.id) {
-      res
-        .status(403)
-        .json({ message: "Kamu tidak memiliki akses untuk mengedit post ini" });
+      res.status(403).json({
+        message: "Kamu tidak memiliki akses untuk mengedit post ini",
+      });
       return;
     }
-
-    // 2. Lanjut update jika pemiliknya benar
     const updated = await prisma.post.update({
       where: { id },
       data: {
         content,
-        ...(file && { photo: `/uploads/${file.filename}` }),
+        ...(photo && { photo }), // ambil URL dari Cloudinary yang diset oleh middleware
       },
     });
 

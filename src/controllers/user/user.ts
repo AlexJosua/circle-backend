@@ -50,8 +50,7 @@ export const getMe = async (req: Request, res: Response) => {
 
 export const updateProfile = async (req: Request, res: Response) => {
   const user = (req as any).user;
-  const { username, bio, name } = req.body;
-  const photo = req.file?.filename;
+  const { username, bio, name, photo } = req.body;
 
   try {
     const updated = await prisma.user.update({
@@ -60,7 +59,7 @@ export const updateProfile = async (req: Request, res: Response) => {
         name,
         username,
         bio,
-        ...(photo && { photo: `/uploads/${photo}` }),
+        ...(photo && { photo }),
       },
     });
 
