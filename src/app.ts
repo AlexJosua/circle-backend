@@ -28,9 +28,9 @@ app.use("/api", likeRouter);
 app.use("/api", searchRouter);
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
-// app.get("/", (_, res) => {
-//   res.send("API is running ✅");
-// });
+app.get("/", (_, res) => {
+  res.send("API is running ✅");
+});
 
 app.listen(PORT, () => {
   console.log(`server is running in port ${PORT}`);
