@@ -17,7 +17,7 @@ const PORT = process.env.PORT || 3000;
 
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL,
+    origin: process.env.FRONTEND_URL || "https://alex-circle-fe-new.vercel.app",
     credentials: true,
     allowedHeaders: ["Content-Type", "Authorization"],
   })
